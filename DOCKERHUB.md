@@ -78,6 +78,6 @@ docker run -d --name camgrid \
 ## Tags
 
 - `latest` — newest build
-- `1.0.1` — pinned version
+- `1.0.2` — pinned version
 
 Multi-arch: `linux/amd64`, `linux/arm64`.
