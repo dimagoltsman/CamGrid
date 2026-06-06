@@ -8,7 +8,8 @@ services:
     # (Linux only. On Docker Desktop Mac/Windows, see README for the ports: fallback.)
     network_mode: host
     environment:
-      - PORT=3000
+      # Web UI port (host-network mode binds this directly on the host). Set WEB_PORT in .env.
+      - PORT=${WEB_PORT:-3000}
       # Login credentials for the web UI. If AUTH_PASS is empty, the UI is OPEN.
       - AUTH_USER=${AUTH_USER}
       - AUTH_PASS=${AUTH_PASS}
@@ -34,7 +35,11 @@ services:
   #   build: .
   #   container_name: camgrid
   #   restart: unless-stopped
+  #   environment:
+  #     - PORT=${WEB_PORT:-3000}
+  #     - AUTH_USER=${AUTH_USER}
+  #     - AUTH_PASS=${AUTH_PASS}
   #   ports:
-  #     - "3000:3000"
+  #     - "${WEB_PORT:-3000}:${WEB_PORT:-3000}"
   #   volumes:
   #     - ${DATA_PATH:-./data}:/data

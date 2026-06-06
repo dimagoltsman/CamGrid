@@ -101,6 +101,10 @@ button.primary { background: var(--accent); border-color: var(--accent); }
   display: block;
 }
 
+/* go2rtc's player draws a small transport badge (MSE / RTC / loading) in the corner.
+   Hide that badge but keep the .status line so real errors still surface. */
+.tile video-stream .mode { display: none; }
+
 /* Hide the native player controls (play bar, volume, fullscreen, timeline). */
 .tile video::-webkit-media-controls,
 .tile video::-webkit-media-controls-enclosure,

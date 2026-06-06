@@ -34,6 +34,9 @@ cp .env.example .env        # set AUTH_USER / AUTH_PASS for the web login
 docker compose up -d --build
 ```
 
+The web UI port defaults to **3000**; change it by setting `WEB_PORT` in `.env`
+(e.g. `WEB_PORT=8080`) — it drives both the app's listen port and the published port.
+
 Open `http://<that-box-ip>:3000`, sign in, then either click **Scan** / **+ Add** → *By IP*
 and enter the camera password, or **+ Add** → *By URL* and paste the stream URL(s). Done.
 
