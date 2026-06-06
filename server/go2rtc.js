@@ -18,9 +18,16 @@ export const go2rtcBaseURL = `http://127.0.0.1:${GO2RTC_PORT}`;
 export function startGo2rtc() {
   if (proc) return;
   // Minimal config — streams are managed dynamically over the API.
+  //
+  // Bind the API AND the RTSP server to localhost: both serve streams with no auth, and
+  // we never want them reachable from the LAN (esp. in host-network Docker mode). The app
+  // talks to go2rtc only over localhost; browsers reach it through the auth-gated /go2rtc
+  // proxy. WebRTC's :8555 stays open because browsers connect to it directly for the
+  // low-latency path — but it's not pullable without the SDP handshake done over the
+  // (localhost-only, auth-gated) API, so there's nothing to grab there without a session.
   const configPath = path.join(DATA_DIR, 'go2rtc.yaml');
   fs.mkdirSync(DATA_DIR, { recursive: true });
-  fs.writeFileSync(configPath, `api:\n  listen: "127.0.0.1:${GO2RTC_PORT}"\nrtsp:\n  listen: ":8554"\nwebrtc:\n  listen: ":8555"\n`);
+  fs.writeFileSync(configPath, `api:\n  listen: "127.0.0.1:${GO2RTC_PORT}"\nrtsp:\n  listen: "127.0.0.1:8554"\nwebrtc:\n  listen: ":8555"\n`);
 
   proc = spawn(GO2RTC_BIN, ['-config', configPath], { stdio: ['ignore', 'inherit', 'inherit'] });
   proc.on('exit', (code) => {

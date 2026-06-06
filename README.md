@@ -60,6 +60,11 @@ The UI requires a login, configured by env vars:
 - **Brute-force lockout** is per client IP: after `LOCKOUT_ATTEMPTS` failures, that IP is
   blocked for `LOCKOUT_MINUTES`. The signing secret persists in `data/session.secret`.
 - The login also gates the **stream WebSockets**, so video can't be viewed unauthenticated.
+- go2rtc's **API (`:1984`) and RTSP server (`:8554`) bind to localhost only** — they serve
+  streams with no auth, so they must never face the LAN (host-network mode would otherwise
+  expose them). Browsers reach streams solely through the auth-gated `/go2rtc` proxy. WebRTC's
+  `:8555` stays reachable for the low-latency path but can't be pulled without an SDP handshake
+  done over that same gated API.
 
 > **Linux host** (recommended): `network_mode: host` (default) lets the server scan the
 > subnet and reach cameras directly.
