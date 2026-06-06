@@ -1,5 +1,7 @@
 # CamGrid
 
+![CamGrid — multiview grid of live camera tiles](Screenshot.webp)
+
 Self-hosted multiview for IP cameras. Runs in Docker **on your camera network**,
 pulls each camera's stream directly, and serves a browser UI you can reach
 from anywhere.

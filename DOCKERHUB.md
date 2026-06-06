@@ -1,5 +1,7 @@
 # CamGrid
 
+![CamGrid — multiview grid of live camera tiles](https://raw.githubusercontent.com/dimagoltsman/CamGrid/master/Screenshot.webp)
+
 Self-hosted multiview for IP cameras. Runs in Docker **on your camera network**, pulls
 each camera's stream directly, and serves a browser UI you can reach from anywhere.
 
@@ -9,7 +11,7 @@ each camera's stream directly, and serves a browser UI you can reach from anywhe
 - Live video via [go2rtc](https://github.com/AlexxIT/go2rtc) (WebRTC ~0.5s latency, MSE fallback)
 - Built-in login (HMAC session cookies + per-IP lockout); single exposed port
 
-Source & full docs: https://github.com/dimagoltsman/camgrid
+Source & full docs: https://github.com/dimagoltsman/CamGrid
 
 ## Quick start (docker-compose)
 
