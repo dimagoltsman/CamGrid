@@ -117,6 +117,12 @@ done. Note: over a proxy, streams use the **MSE** path (HTTP/WS) — WebRTC's lo
 UDP needs go2rtc's `:8555` reachable, which a plain HTTP proxy doesn't carry; MSE works
 fine through nginx (~1s latency).
 
+**Want WebRTC remotely** (~0.5s instead of ~1s)? Forward `:8555` (TCP **and** UDP) to the
+host and set `WEBRTC_CANDIDATE` to the address go2rtc should advertise —
+`WEBRTC_CANDIDATE=cam.example.com:8555` or `stun:8555` to auto-detect a public IP. On the
+LAN, WebRTC already works with no config. (Cloudflare Tunnel can't carry WebRTC's UDP —
+MSE only there.)
+
 ## How it fits together
 
 ```

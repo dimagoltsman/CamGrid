@@ -18,6 +18,11 @@ services:
       - LOCKOUT_ATTEMPTS=50     # failed logins per IP before lockout
       - LOCKOUT_MINUTES=15     # lockout duration
       - TRUST_PROXY=1          # hops to trust for X-Forwarded-* (set false if no proxy)
+      # WebRTC (low-latency) only works if the browser can reach :8555 directly. Behind a
+      # reverse proxy it falls back to MSE. To enable it remotely, forward :8555 (TCP+UDP)
+      # to this host and set WEBRTC_CANDIDATE to the advertised address, e.g.
+      # WEBRTC_CANDIDATE=cam.example.com:8555  (or stun:8555). Empty = MSE/LAN-only.
+      - WEBRTC_CANDIDATE=${WEBRTC_CANDIDATE:-}
     volumes:
       # Bind-mount the data folder from the host so all state survives container rebuilds:
       #   cameras.json   — saved cameras incl. IPs and plaintext passwords (keep private!)
@@ -39,7 +44,11 @@ services:
   #     - PORT=${WEB_PORT:-3000}
   #     - AUTH_USER=${AUTH_USER}
   #     - AUTH_PASS=${AUTH_PASS}
+  #     - WEBRTC_CANDIDATE=${WEBRTC_CANDIDATE:-}
   #   ports:
   #     - "${WEB_PORT:-3000}:${WEB_PORT:-3000}"
+  #     # Uncomment to enable remote WebRTC (also set WEBRTC_CANDIDATE):
+  #     - "8555:8555/tcp"
+  #     - "8555:8555/udp"
   #   volumes:
   #     - ${DATA_PATH:-./data}:/data

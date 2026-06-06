@@ -27,7 +27,21 @@ export function startGo2rtc() {
   // (localhost-only, auth-gated) API, so there's nothing to grab there without a session.
   const configPath = path.join(DATA_DIR, 'go2rtc.yaml');
   fs.mkdirSync(DATA_DIR, { recursive: true });
-  fs.writeFileSync(configPath, `api:\n  listen: "127.0.0.1:${GO2RTC_PORT}"\nrtsp:\n  listen: "127.0.0.1:8554"\nwebrtc:\n  listen: ":8555"\n`);
+
+  // WebRTC only works when the browser can reach :8555 directly. Behind a reverse proxy
+  // (only :443 forwarded) that fails and the player falls back to MSE. Set WEBRTC_CANDIDATE
+  // to the address go2rtc should advertise so remote browsers can connect — e.g.
+  // "cam.example.com:8555", a public "203.0.113.5:8555", or "stun:8555" (discover public IP
+  // via STUN). Comma-separated for multiple. Requires forwarding :8555 TCP+UDP to this host.
+  const candidates = (process.env.WEBRTC_CANDIDATE || '')
+    .split(',').map((c) => c.trim()).filter(Boolean);
+  const webrtc = `webrtc:\n  listen: ":8555"\n` +
+    (candidates.length ? `  candidates:\n${candidates.map((c) => `    - "${c}"\n`).join('')}` : '');
+
+  fs.writeFileSync(configPath,
+    `api:\n  listen: "127.0.0.1:${GO2RTC_PORT}"\n` +
+    `rtsp:\n  listen: "127.0.0.1:8554"\n` +
+    webrtc);
 
   proc = spawn(GO2RTC_BIN, ['-config', configPath], { stdio: ['ignore', 'inherit', 'inherit'] });
   proc.on('exit', (code) => {
