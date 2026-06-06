@@ -1,6 +1,6 @@
 {
   "name": "camgrid",
-  "version": "1.0.2",
+  "version": "1.0.3",
   "description": "Self-hosted multiview for IP cameras — Reolink by IP or any stream URL, direct via go2rtc, view from anywhere.",
   "type": "module",
   "main": "server/index.js",

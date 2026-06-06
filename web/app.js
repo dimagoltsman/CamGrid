@@ -79,7 +79,9 @@ function makeTile(cam, channel) {
   const mountPlayer = (wsUrl) => {
     const old = tile.querySelector('video-stream');
     const p = document.createElement('video-stream');
-    p.setAttribute('mode', 'webrtc,mse');
+    // MSE-only: WebRTC needs the browser to reach go2rtc's :8555 directly, which doesn't
+    // survive a reverse proxy / symmetric NAT. MSE rides the existing WS through the proxy.
+    p.setAttribute('mode', 'mse');
     p.background = true;
     p.src = wsUrl;
     if (old) old.replaceWith(p); else tile.prepend(p);
