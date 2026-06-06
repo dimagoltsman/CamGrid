@@ -1,5 +1,10 @@
 node_modules
 data
 .git
+.env
+.env.*
+.claude
 *.log
 npm-debug.log*
+Screenshot.webp
+.local
