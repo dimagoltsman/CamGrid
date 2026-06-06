@@ -1,0 +1,208 @@
+:root {
+  --bg: #0b0c0e;
+  --panel: #16181c;
+  --line: #262a31;
+  --text: #e7e9ee;
+  --muted: #8b909a;
+  --accent: #3b82f6;
+  --danger: #ef4444;
+}
+
+* { box-sizing: border-box; }
+
+body {
+  margin: 0;
+  font: 14px/1.4 -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+  background: var(--bg);
+  color: var(--text);
+}
+
+header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 10px 16px;
+  border-bottom: 1px solid var(--line);
+  position: sticky;
+  top: 0;
+  background: rgba(11, 12, 14, 0.85);
+  backdrop-filter: blur(8px);
+  z-index: 10;
+}
+
+header h1 { font-size: 16px; margin: 0; font-weight: 650; }
+
+.actions { display: flex; gap: 8px; align-items: center; }
+
+.layout-sel {
+  background: var(--panel);
+  color: var(--text);
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  padding: 7px 10px;
+  font-size: 13px;
+  cursor: pointer;
+}
+.layout-sel:hover { border-color: var(--accent); }
+
+button {
+  background: var(--panel);
+  color: var(--text);
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  padding: 7px 12px;
+  font-size: 13px;
+  cursor: pointer;
+}
+button:hover { border-color: var(--accent); }
+button:disabled { opacity: 0.5; cursor: default; }
+button.primary { background: var(--accent); border-color: var(--accent); }
+
+.grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(min(100%, 480px), 1fr));
+  gap: 8px;
+  padding: 8px;
+}
+
+/* --- Fixed grid layouts (Reolink-style). Applied as a class on .grid. They force
+   equal cells and override the per-video aspect-ratio the tiles set inline. --- */
+.grid.g2 { grid-template-columns: repeat(2, 1fr); }
+.grid.g3 { grid-template-columns: repeat(3, 1fr); }
+.grid.g4 { grid-template-columns: repeat(4, 1fr); }
+.grid.hero { grid-template-columns: repeat(4, 1fr); grid-auto-flow: dense; }
+/* Hero: the first tile is large (3×3), the rest stay small and flow around/below it. */
+.grid.hero > .tile:first-child { grid-column: span 3; grid-row: span 3; }
+
+.grid.g2 .tile, .grid.g3 .tile, .grid.g4 .tile, .grid.hero .tile {
+  aspect-ratio: 16 / 9 !important; /* equal cells, ignore each video's real ratio */
+}
+
+/* Narrow screens: relax the denser layouts so tiles don't get postage-stamp small. */
+@media (max-width: 720px) {
+  .grid.g3, .grid.g4, .grid.hero { grid-template-columns: repeat(2, 1fr); }
+  .grid.hero > .tile:first-child { grid-column: span 2; grid-row: span 2; }
+}
+
+.tile {
+  position: relative;
+  aspect-ratio: 16 / 9; /* placeholder until the video reports its real ratio */
+  background: #000;
+  border-radius: 10px;
+  overflow: hidden;
+  border: 1px solid var(--line);
+}
+
+.tile video-stream, .tile video {
+  width: 100%;
+  height: 100%;
+  /* tile is sized to the video's real ratio (set in JS), so contain == full, no bars */
+  object-fit: contain;
+  display: block;
+}
+
+/* Hide the native player controls (play bar, volume, fullscreen, timeline). */
+.tile video::-webkit-media-controls,
+.tile video::-webkit-media-controls-enclosure,
+.tile video::-webkit-media-controls-panel {
+  display: none !important;
+  -webkit-appearance: none;
+}
+
+/* Full-page (not OS fullscreen): the tile fills the browser viewport. */
+.tile.fullpage {
+  position: fixed;
+  inset: 0;
+  z-index: 1000;
+  aspect-ratio: auto !important;
+  border: none;
+  border-radius: 0;
+  background: #000;
+}
+.tile.fullpage video-stream, .tile.fullpage video { object-fit: contain; }
+
+.tile .bar {
+  position: absolute;
+  top: 0; left: 0; right: 0;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 6px 10px;
+  background: linear-gradient(to bottom, rgba(0,0,0,0.6), transparent);
+  font-size: 12px;
+  font-weight: 600;
+  pointer-events: none;
+  opacity: 0;
+  transition: opacity .15s;
+}
+/* Reveal the control bar only on hover/focus — like the PTZ pad — for a clean view. */
+.tile:hover .bar,
+.tile:focus-within .bar { opacity: 1; }
+
+.tile .bar .dot { width: 7px; height: 7px; border-radius: 50%; background: #22c55e; }
+.tile .bar .spacer { flex: 1; }
+.tile .bar button { pointer-events: auto; padding: 2px 7px; font-size: 11px; }
+
+.ptz {
+  position: absolute;
+  bottom: 10px; right: 10px;
+  display: grid;
+  grid-template-columns: repeat(3, 30px);
+  grid-template-rows: repeat(3, 30px);
+  gap: 3px;
+  opacity: 0;
+  transition: opacity .15s;
+}
+.tile:hover .ptz { opacity: 1; }
+.ptz button {
+  padding: 0;
+  display: flex; align-items: center; justify-content: center;
+  background: rgba(0,0,0,0.55);
+  border-color: rgba(255,255,255,0.15);
+  font-size: 14px;
+}
+.ptz button:active { background: var(--accent); }
+.ptz .up { grid-area: 1 / 2; }
+.ptz .left { grid-area: 2 / 1; }
+.ptz .right { grid-area: 2 / 3; }
+.ptz .down { grid-area: 3 / 2; }
+.ptz .zin { grid-area: 1 / 3; }
+.ptz .zout { grid-area: 3 / 3; }
+
+.empty {
+  color: var(--muted);
+  text-align: center;
+  padding: 80px 20px;
+  font-size: 15px;
+}
+.empty.hidden { display: none; }
+
+dialog {
+  border: 1px solid var(--line);
+  border-radius: 12px;
+  background: var(--panel);
+  color: var(--text);
+  width: min(92vw, 420px);
+  padding: 0;
+}
+dialog::backdrop { background: rgba(0,0,0,0.5); }
+dialog form { padding: 18px; display: flex; flex-direction: column; gap: 10px; }
+dialog h2 { margin: 0 0 4px; font-size: 16px; }
+dialog label { display: flex; flex-direction: column; gap: 4px; font-size: 12px; color: var(--muted); }
+dialog input {
+  background: var(--bg); border: 1px solid var(--line); border-radius: 8px;
+  padding: 8px; color: var(--text); font-size: 14px;
+}
+dialog .row { display: flex; justify-content: flex-end; gap: 8px; margin-top: 6px; }
+.seg { display: flex; gap: 4px; padding: 3px; background: var(--bg); border: 1px solid var(--line); border-radius: 9px; }
+.seg button { flex: 1; padding: 7px; border: none; background: transparent; border-radius: 6px; color: var(--muted); }
+.seg button:hover { border: none; color: var(--text); }
+.seg button.active { background: var(--panel); color: var(--text); box-shadow: 0 1px 2px rgba(0,0,0,0.3); }
+.mode { display: flex; flex-direction: column; gap: 10px; }
+.hidden { display: none; }
+.discovered { display: flex; flex-direction: column; gap: 4px; }
+.discovered .d {
+  display: flex; justify-content: space-between; align-items: center;
+  padding: 6px 8px; border: 1px solid var(--line); border-radius: 8px; font-size: 13px;
+}
+.err { color: var(--danger); font-size: 12px; min-height: 14px; margin: 0; }

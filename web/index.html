@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+  <title>CamGrid</title>
+  <link rel="stylesheet" href="/style.css" />
+  <!-- go2rtc web component (ES module): WebRTC with MSE fallback -->
+  <script type="module" src="/go2rtc/video-stream.js"></script>
+</head>
+<body>
+  <header>
+    <h1>CamGrid</h1>
+    <div class="actions">
+      <select id="layoutSel" class="layout-sel" title="Grid layout">
+        <option value="auto">Auto</option>
+        <option value="g2">2 × 2</option>
+        <option value="g3">3 × 3</option>
+        <option value="g4">4 × 4</option>
+        <option value="hero">1 + small</option>
+      </select>
+      <button id="scanBtn" title="Scan the local network">Scan</button>
+      <button id="addBtn" title="Add a camera by IP">+ Add</button>
+      <button id="logoutBtn" title="Sign out" hidden>Sign out</button>
+    </div>
+  </header>
+
+  <main id="grid" class="grid"></main>
+  <div id="empty" class="empty">No cameras yet — Scan the network or Add one.</div>
+
+  <!-- Add / discovered dialog -->
+  <dialog id="addDialog">
+    <form method="dialog" id="addForm">
+      <h2>Add camera</h2>
+
+      <div class="seg" id="modeSeg">
+        <button type="button" data-mode="ip" class="active">By IP</button>
+        <button type="button" data-mode="url">By URL</button>
+      </div>
+
+      <!-- IP mode: probe a Reolink camera by address + credentials -->
+      <div class="mode mode-ip">
+        <div id="discovered" class="discovered"></div>
+        <label>Host / IP <input name="host" autocomplete="off" /></label>
+        <label>Username <input name="username" value="admin" autocomplete="off" /></label>
+        <label>Password <input name="password" type="password" autocomplete="off" /></label>
+      </div>
+
+      <!-- URL mode: paste stream URLs straight in (rtsp://, http://, …) -->
+      <div class="mode mode-url hidden">
+        <label>Low / SD stream URL <input name="lowURL" autocomplete="off" placeholder="rtsp://user:pass@host:554/…" /></label>
+        <label>High / HD stream URL (optional) <input name="highURL" autocomplete="off" placeholder="rtsp://user:pass@host:554/…" /></label>
+      </div>
+
+      <label>Name (optional) <input name="name" autocomplete="off" /></label>
+      <div class="row">
+        <button value="cancel" type="button" id="addCancel">Cancel</button>
+        <button value="ok" id="addOk">Add</button>
+      </div>
+      <p class="err" id="addErr"></p>
+    </form>
+  </dialog>
+
+  <script type="module" src="/app.js"></script>
+</body>
+</html>

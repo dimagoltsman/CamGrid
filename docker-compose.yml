@@ -1,0 +1,40 @@
+services:
+  camgrid:
+    build: .
+    container_name: camgrid
+    restart: unless-stopped
+    # Host networking lets the server discover cameras (subnet scan) and reach their
+    # RTSP/CGI ports directly — the whole point: the server is local to the cameras.
+    # (Linux only. On Docker Desktop Mac/Windows, see README for the ports: fallback.)
+    network_mode: host
+    environment:
+      - PORT=3000
+      # Login credentials for the web UI. If AUTH_PASS is empty, the UI is OPEN.
+      - AUTH_USER=${AUTH_USER}
+      - AUTH_PASS=${AUTH_PASS}
+      # Optional tuning:
+      - SESSION_DAYS=30        # how long the login cookie lasts
+      - LOCKOUT_ATTEMPTS=50     # failed logins per IP before lockout
+      - LOCKOUT_MINUTES=15     # lockout duration
+      - TRUST_PROXY=1          # hops to trust for X-Forwarded-* (set false if no proxy)
+    volumes:
+      # Bind-mount the data folder from the host so all state survives container rebuilds:
+      #   cameras.json   — saved cameras incl. IPs and plaintext passwords (keep private!)
+      #   go2rtc.yaml    — generated stream config (embeds RTSP URLs with auth)
+      #   session.secret — login cookie signing key
+      # Override the host path with DATA_PATH in .env (e.g. /srv/camgrid/data).
+      # Defaults to ./data next to this compose file.
+      - ${DATA_PATH:-./data}:/data
+
+  # --- Docker Desktop (Mac/Windows) fallback: host networking isn't supported there.
+  # Comment out the service above and use this one instead. Auto-discovery (subnet
+  # scan) won't work in bridge mode — add cameras by IP manually.
+  #
+  # camgrid:
+  #   build: .
+  #   container_name: camgrid
+  #   restart: unless-stopped
+  #   ports:
+  #     - "3000:3000"
+  #   volumes:
+  #     - ${DATA_PATH:-./data}:/data

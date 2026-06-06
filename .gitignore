@@ -1,0 +1,10 @@
+node_modules/
+data/
+*.log
+.DS_Store
+
+# local dev: downloaded go2rtc binary for running outside Docker
+.local/
+
+# secrets — never commit the real .env (use .env.example as the template)
+.env

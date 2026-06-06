@@ -1,0 +1,17 @@
+{
+  "version": "0.0.1",
+  "configurations": [
+    {
+      "name": "camgrid",
+      "runtimeExecutable": "env",
+      "runtimeArgs": [
+        "DATA_DIR=/tmp/camgrid-preview",
+        "GO2RTC_BIN=/Users/dima/dev/reolink-web/.local/go2rtc",
+        "node",
+        "/Users/dima/dev/reolink-web/server/index.js"
+      ],
+      "port": 3000,
+      "autoPort": true
+    }
+  ]
+}
